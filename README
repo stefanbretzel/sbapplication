@@ -1,0 +1,6 @@
+sbapplication - A LaTeX class for job applications
+
+sbapplication is a LaTeX class for self-contained job applications, i.e. it provides environments for
+cover letter, cv and diplomas.
+
+To install, run sbapplication.ins. This will generate sbapplication.cls -- the actual class file -- along with sbapplication.tex, the user documentation.

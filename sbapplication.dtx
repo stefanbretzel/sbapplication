@@ -1,0 +1,772 @@
+% \iffalse meta-comment
+%
+% Copyright (C) 2014 by Stefan Bretzel
+% -----------------------------------
+%
+% This file may be distributed and/or modified under the
+% conditions of the LaTeX Project Public License, either version 1.2
+% of this license or (at your option) any later version.
+% The latest version of this license is in:
+%
+% http://www.latex-project.org/lppl.txt
+%
+% and version 1.2 or later is part of all distributions of LaTeX
+% version 1999/12/01 or later.
+%
+% \fi
+%
+% \iffalse
+%<*driver>
+\ProvidesFile{sbapplication.dtx}
+%</driver>
+%<class>\NeedsTeXFormat{LaTeX2e}[1999/12/01]
+%<class>\ProvidesClass{sbapplication}
+%<*class>
+[2014/02/14 v0.1 A class for writing job applications]
+%</class>
+%
+%<*driver>
+\documentclass{ltxdoc}
+\EnableCrossrefs
+\CodelineIndex
+\RecordChanges
+\begin{document}
+    \DocInput{sbapplication.dtx}
+\end{document}
+%</driver>
+% \fi
+%
+% \CheckSum{0}
+%
+%
+% \CharacterTable
+%  {Upper-case    \A\B\C\D\E\F\G\H\I\J\K\L\M\N\O\P\Q\R\S\T\U\V\W\X\Y\Z
+%   Lower-case    \a\b\c\d\e\f\g\h\i\j\k\l\m\n\o\p\q\r\s\t\u\v\w\x\y\z
+%   Digits        \0\1\2\3\4\5\6\7\8\9
+%   Exclamation   \!     Double quote  \"     Hash (number) \#
+%   Dollar        \$     Percent       \%     Ampersand     \&
+%   Acute accent  \'     Left paren    \(     Right paren   \)
+%   Asterisk      \*     Plus          \+     Comma         \,
+%   Minus         \-     Point         \.     Solidus       \/
+%   Colon         \:     Semicolon     \;     Less than     \<
+%   Equals        \=     Greater than  \>     Question mark \?
+%   Commercial at \@     Left bracket  \[     Backslash     \\
+%   Right bracket \]     Circumflex    \^     Underscore    \_
+%   Grave accent  \`     Left brace    \{     Vertical bar  \|
+%   Right brace   \}     Tilde         \~}
+
+%
+% \changes{v0.1}{2014/02/14}{Initial version}
+%
+% \GetFileInfo{sbapplication.dtx}
+%
+% \DoNotIndex{}
+%
+% \title{The \textsf{sbapplication} class\thanks{This document
+% corresponds to \textsf{sbapplication}~\fileversion, % dated \filedate.}}
+% \author{Stefan Bretzel\\ \texttt{stefan.bretzel at googlemail.com}}
+%
+% \maketitle
+%
+% \begin{abstract}
+% The \textsf{sbapplication} class allows you to write job applications consisting of a cover letter, a cv and a list of diplomas all within one \LaTeX document. 
+% \end{abstract}
+%
+% \section{Introduction}
+% In the beginning, this class started out as a number of macros I had defined in order to typeset my cv in \LaTeX. 
+%But of course, job applications require also a cover letter and (at least in Germany
+%\footnote{\textsf{sbapplication} probably incorporates some idiosyncracies of the German job market. 
+%Wherever I was aware of such, I implemented a switch accessible via the \texttt{german} option for the way it should be for applications within Germany and the default being as it should be for the American job market.}) a list of diplomas to be sent in at the same time. 
+%So I started to customize the \textsf{dinbrief} class for the former purpose and wrote another bunch of macros for the latter.
+%In addition, many employers want to have the whole application contained in one file. 
+%So I stitched together the various pdfs I had generated to a single one -- maybe not the most elegant way, but at least it helped me to find a job. 
+%Anyway, I vowed to do it more elegantly for the next time on the job hunt, which resulted in this class. 
+%Some of its features are:
+%\begin{itemize}
+% \item Custom environments for cover letter, cv, sections of your cv and a list of diplomas.
+% \item Macros for the use of meta data such as the name, adress, date etc.
+% \item Automatic inclusion of the various parts of your application in the pdf table of contents.
+% \item Easy management of your included diplomas -- not only is a diploma easily included with a simple command, but also a list of %diplomas is generated which you may use anywhere in the document.
+% \item Various hooks to customize the look of the whole document -- after all, your application should be as unique as you are.
+% \item The possibility to compile your document in a ``public'' and ``private'' mode -- this allows you to include additional information you may want to use in your version of the document but not send out to the prospective employer.
+%\end{itemize}
+
+% \section{Writing a job application}
+% This section describes the various steps that need to be taken when writing a full application -- consisting of a cover letter, a cv and a list of diplomas you might want to add.
+% \subsection{Setting meta data}
+% The \textsf{sbapplication} class uses meta data throughout to typeset information such as your name, adress, the date for your cover letter and cv etc. 
+
+% Most of this meta data is used in various places thrhoughout your job application. So, for example, the adress information is used when typesetting the adress of your coverletter as well as when typesetting the title page of your cv.
+%\subsubsection{Required meta data}
+%The following commands must be used in the preamble of your document to set the required meta data to the desired values:
+%
+% \DescribeMacro{\firstname}\DescribeMacro{\lastname}  Use |\firstname|  and |\lastname| to set your first resp. lastname.
+%  
+% \DescribeMacro{\initials} User |\initials| to set your initials. The value for those are used in the backadress in the cover letter.
+%
+% \DescribeMacro{\place}
+% \DescribeMacro{\zip}
+% \DescribeMacro{\street}
+% The |\place|, |\zip|, |\street| macros are used to set the various parts of your adress. Those values are e.g. used to typeset the adress in your cover letter or on the cv title page. In case you want to send out applications internationally, there are further optional macros to set your country. See the next section.
+
+% \DescribeMacro{\email}
+% \DescribeMacro{\phone}
+% Both |\email| and |\phone| are further macros to set your contact info.
+%
+% \subsubsection{Optional meta data}
+% The following macros let you set optional meta data:
+%
+%\DescribeMacro{\degreeshort}\DescribeMacro{\degree} |\degreeshort| and |\degree| let you set the values for your degree as a short version (e.g. MSc) or long one (e.g. Master of Science). This information may be used in the cover page of your application as well as when generating the head of your cv.
+%
+% \DescribeMacro{\academictitle} For those of you that have not only a degree, but also a title like Dr. (or even Prof.), there is the |\academictitle| macro to store this information in.
+
+%\DescribeMacro{\country}\DescribeMacro{\countrycode} With the |\country| and |\countrycode| macros you can set the information of your country of residence. When set, \textsf{sbapplication} assumes you want to send out your application internationally and thus amends the typeset adresses in an appropriate way.
+
+%\DescribeMacro{\www} In the |\www| macro you can store the URL of a website you'd like your prospective employer to know.
+%
+% \subsection{The coverletter environment}
+%
+% \subsection{The cv environment}
+%
+% \subsection{The diplomas environment}
+% \DescribeEnv{diplomas} The |diplomas| environment can be used to include your diplomas in a nice way in your application. Opening this environment automatically creates an extra page within your job application containing a list of all included diplomas.
+%
+%\DescribeMacro{\diploma} In order to include the actual diploma, use the |\diploma|\{description\}\{label\}\{filename\}\{pages\}\{start page\} command.
+% \section{Advanced usage}
+% \subsection{Private parts of your job application}
+% \subsection{Custom include mechanism}
+% \section{Changing how things look}
+% \DescribeMacro{\YOURMACRO}
+% Put description of |\YOURMACRO| here.
+%
+% \DescribeEnv{YOURENV}
+% Put description of |YOURENV| here.
+%
+% \StopEventually{\PrintIndex}
+%
+% \section{Implementation}
+% \subsection{Class initialization and option processing}
+
+%    \begin{macrocode}
+\typeout{---sbapplication.cls (writing a document including an application 
+cover letter, cv and diplomas based on article)---}
+
+\RequirePackage{ifthen}
+\RequirePackage{fancyhdr}
+\RequirePackage{babel}
+\RequirePackage{pdfpages}
+
+%    \end{macrocode}
+% Next we define the class options. Some of them will be just passed to the \textsf{article} class, from which this class was derived.
+% 
+% First we have the options that control if the document is two or onesided and the font size. These options are passed to the \textsf{article} class:
+%    \begin{macrocode}
+\newboolean{app@twoside}
+\setboolean{app@twoside}{true}
+\DeclareOption{oneside}{\setboolean{app@twoside}{false}\PassOptionsToClass{oneside}{article}}
+\DeclareOption{twoside}{\setboolean{app@twoside}{true}\PassOptionsToClass{twoside}{article}}
+\DeclareOption{draft}{\PassOptionsToClass{draft}{article}}
+\DeclareOption{10pt}{\PassOptionsToClass{10pt}{article}}
+\DeclareOption{11pt}{\PassOptionsToClass{11pt}{article}}
+\DeclareOption{12pt}{\PassOptionsToClass{12pt}{article}}
+%    \end{macrocode}
+% The |german| option will be used throughout the class to take idiosyncracies of German job applications into account.
+%    \begin{macrocode}
+\newboolean{app@german}
+\setboolean{app@german}{false}
+\DeclareOption{german}{\setboolean{app@german}{true}}
+%    \end{macrocode}
+% The |cvpage| and |cvhead| options control if the cv will start with a separate title page or not.
+%    \begin{macrocode}
+\newboolean{app@cvtitlepage}
+\setboolean{app@cvtitlepage}{true}
+\DeclareOption{cvpage}{\setboolean{app@cvtitlepage}{true}}
+\DeclareOption{cvhead}{\setboolean{app@cvtitlepage}{false}}
+%    \end{macrocode}
+% Similarly, if the option |diplpage| is set, the diplomas environment starts with a titlepage.
+%    \begin{macrocode}
+\newboolean{app@diplpage}
+\setboolean{app@diplpage}{true}
+\DeclareOption{diplpage}{\setboolean{app@diplpage}{true}}
+\DeclareOption{nodiplpage}{\setboolean{app@diplpage}{false}}
+%    \end{macrocode}
+% The |totoc| and |notoc| options regulate, whether cv, the cover letter, the diplomas resp. the title page for the diplomas will create entries in the pdf table of contents.
+%    \begin{macrocode}
+\newboolean{app@notoc}
+\setboolean{app@notoc}{true}
+\newcommand{\AppToToc}{\setboolean{app@notoc}{false}}
+\DeclareOption{notoc}{\setboolean{app@notoc}{true}}
+\DeclareOption{totoc}{\AppToToc}
+%    \end{macrocode}
+% Finally, process all options, require some more packages and load the \textsf{article} class. So far, \textsf{sbapplication} supports only a4 paper, thus we load the \textsf{article} class with the |a4paper| option.
+%    \begin{macrocode}
+\ProcessOptions\relax
+\LoadClass[a4paper]{article}
+
+\RequirePackage{hyperref}
+\RequirePackage{longtable}
+\RequirePackage{geometry}
+%    \end{macrocode}
+% If the |german| option was passed, use babel's |\selectlanguage| to select German language settings.
+%    \begin{macrocode}
+\ifthenelse{\boolean{app@german}}{\selectlanguage{german}}{\relax}
+%    \end{macrocode}
+% \subsubsection{Papersize}
+% Since we loaded the base class \textsf{article} with the |a4paper| option, we do not have to adjust the paper size as such.
+% However, DIN 5008, which dictates the correct layout of letters, dictates the size of left and right margins. Furthermore, in DIN 5008 there is no indent at the begin of paragraphs and paragraphs are separated by an empty line. We set those with:
+%    \begin{macrocode}
+\geometry{left=2.5cm, right=2cm,top=2cm,bottom=2cm,footskip=0.5cm} 
+\setlength{\parindent}{0cm}
+\setlength{\parskip}{\baselineskip}
+%    \end{macrocode}
+% \subsection{Keeping some parts of the document private}
+% \begin{environment}{private}
+% To keep some parts of the document private, i.e. only displayed when a flag is set, we define the following environment:   
+%    \begin{macrocode}
+\newif\beginPrivate
+\let\beginPrivate=\iffalse
+\let\endPrivate=\fi
+%    \end{macrocode}
+% \end{environment}
+% \begin{macro}{\ShowPrivate}
+% The flag to show private parts of the document is defined as:
+%    \begin{macrocode}
+\newcommand{\ShowPrivate}{
+\let\beginPrivate=\iftrue
+}
+%    \end{macrocode}
+% \end{macro}
+% \subsection{Names used within the class}
+% There are some names, such as those for the cv and diplomas, that are used throughout \textsf{sbapplication}. Here they are initialized depending on whether the option |german| was set or not:
+%    \begin{macrocode}
+\ifthenelse{\boolean{app@german}}{
+\newcommand{\app@cvname}{Lebenslauf}
+\newcommand{\app@coverlettername}{Anschreiben}
+\newcommand{\app@diplomalistname}{Zeugnisse}
+\newcommand{\app@itstoday}{Heute}
+\newcommand{\app@apptitle}{Bewerbungsmappe}
+}{
+\newcommand{\app@cvname}{CV}
+\newcommand{\app@coverlettername}{Cover Letter}
+\newcommand{\app@diplomalistname}{Diplomas}
+\newcommand{\app@apptitle}{Application}
+\newcommand{\app@itstoday}{now}
+}
+%    \end{macrocode}
+% \subsection{Helper routines}
+% \begin{macro}{\app@pdf@includebookmark}
+% Define a command to make entries on the pdf's table of contents depending on the relevant class option:
+%    \begin{macrocode}
+\ifthenelse{\boolean{app@notoc}}{
+\newcommand{\app@pdf@includebookmark}[3]{\relax}
+}{
+\newcommand{\app@pdf@includebookmark}[3]{\pdfbookmark[#1]{#2}{#3}}
+}
+%    \end{macrocode}
+% \end{macro}
+% \begin{macro}{\app@clearpage}
+% Define a helper routine to clear (double) pages:
+%    \begin{macrocode}
+\newcommand{\app@clearpage}{\ifthenelse{\boolean{app@twoside}}{\cleardoublepage}{\clearpage}}
+%    \end{macrocode}
+% \end{macro}
+% \subsection{Meta data}
+% In this section, the various commands for setting and using meta data are defined.
+%
+% \begin{macro}{\date}
+% \begin{macro}{\@appdate}
+% Save the normal date from article in an extra command for further use:
+%    \begin{macrocode}
+\def\date#1{\gdef\@date{#1}\gdef\@appdate{#1}}
+%    \end{macrocode}
+%  \end{macro}
+% \end{macro}
+% \begin{macro}{\@appdateplace}
+% Define a command to typeset the date (plus place): 
+%    \begin{macrocode}
+\ifthenelse{\boolean{app@german}}{
+\newcommand{\@appdateplace}{\@place, den \@appdate}
+}{\newcommand{\@appdateplace}{\@place, \@appdate}}
+%    \end{macrocode}
+% \end{macro}
+% \subsubsection{Required meta data}
+% Required meta data will result in an error when not defined in the preamble of the document.
+%    \begin{macrocode}
+\def\@thefirstname{\relax}
+\newcommand{\firstname}[1]{\gdef\@thefirstname{#1}}
+\newcommand{\@firstname}{\if\@thefirstname\relax\ClassError{sbapplication}{No first name specified. Use \protect\fristname{} to set it.}{}\else\@thefirstname\fi}
+
+\def\@thelastname{\relax}
+\newcommand{\lastname}[1]{\gdef\@thelastname{#1}}
+\newcommand{\@lastname}{\if\@thelastname\relax\ClassError{sbapplication}{No first name specified. Use \protect\lastname{} to set it.}{}\else\@thelastname\fi}
+
+\def\@theinitials{\relax}
+\newcommand{\initials}[1]{\gdef\@theinitials{#1}}
+\newcommand{\@initials}{\if\@theinitials\relax\ClassError{sbapplication}{No initials specified. Use \protect\initials{} to set it.}{}\else\@theinitials\fi}
+
+\def\@theplace{\relax}
+\newcommand{\place}[1]{\gdef\@theplace{#1}} 
+\newcommand\@place{\if\@theplace\relax\ClassError{app2}{No place specified. Use \protect\place{} to set it}{}\else\@theplace\fi} 
+
+\def\@thezip{\relax}
+\newcommand{\zip}[1]{\gdef\@thezip{#1}} 
+\newcommand\@zip{\if\@thezip\relax\ClassError{app2}{No zip code specified. Use \protect\zip{} to set it}{}\else\@thezip\fi} 
+
+\def\@thestreet{\relax}
+\newcommand{\street}[1]{\gdef\@thestreet{#1}} 
+\newcommand\@street{\if\@thestreet\relax\ClassError{app2}{No street specified. Use \protect\street{} to set it}{}\else\@thestreet\fi} 
+
+\def\@theemail{\relax}
+\newcommand{\email}[1]{\gdef\@theemail{#1}} 
+\newcommand\@email{\if\@theemail\relax\ClassError{app2}{No email specified. Use \protect\email{} to set it}{}\else\@theemail\fi} 
+
+\def\@thephone{\relax}
+\newcommand{\phone}[1]{\gdef\@thephone{#1}} 
+\newcommand\@phone{\if\@thephone\relax\ClassError{app2}{No phone number specified. Use \protect\phone{} to set it}{}\else\@thephone\fi} 
+%    \end{macrocode}
+% \subsubsection{Optional metadata}
+%    \begin{macrocode}
+
+\def\@degreeshort{\relax}
+\newcommand{\degreeshort}[1]{\gdef\@degreeshort{#1}}
+
+\def\@degree{\relax}
+\newcommand{\degree}[1]{\gdef\@degree{#1}}
+
+\def\@academictitle{\relax}
+\newcommand{\academictitle}[1]{\gdef\@academictitle{#1}}
+
+\def\@thecountry{\relax}
+\newcommand{\country}[1]{\gdef\@thecountry{#1}} 
+\newcommand\@country{\if\@thecountry\relax\relax\else\@thecountry\fi} 
+\def\@countrycode{\relax}
+\newcommand{\countrycode}[1]{\gdef\@countrycode{#1 - }}
+
+\def\@thewww{\relax}
+\newcommand{\www}[1]{\gdef\@thewww{#1}}
+\newcommand\@www{\if\@thewww\relax\relax\else\@thewww\fi} 
+%    \end{macrocode}
+% \subsection{The CV}
+% \begin{macro}{\cvdate}
+% Redefine this to change how dates in the CV are set:
+%    \begin{macrocode}
+\newcommand\cvdate[2]{#1/#2} 
+%    \end{macrocode}
+% \end{macro}
+% \begin{macro}{\fromto}
+% \begin{macro}{\tilltoday}
+% Redefine this to change the way time periods are set in the cv:
+%    \begin{macrocode}
+\newcommand\@fromto[2]{#1\mbox{ -- }#2} 
+\newcommand\fromto[4]{\@fromto{\cvdate{#1}{#2}}{\cvdate{#3}{#4}}}
+\newcommand\tilltoday[2]{\@fromto{\cvdate{#1}{#2}}{\app@itstoday}}
+%    \end{macrocode}
+% \end{macro}
+% \end{macro}
+% \begin{macro}{\AtBeginCV}
+% This command is called after the page was cleared but before any other commands for opening the cv were called. Redefine this if you need to take some action at this point.
+%    \begin{macrocode}
+\newcommand{\AtBeginCV}{\relax}
+%    \end{macrocode}
+% \end{macro}
+% \begin{macro}{\cvsignature}
+% Redefine this command if you want to sign your CV in a different way:
+%    \begin{macrocode}
+\newcommand{\cvsignature}[1]{\hfill\vspace{\baselineskip}\newline
+\@appdateplace
+\hfill\vspace{\baselineskip}\newline#1
+}
+%    \end{macrocode}
+%  \end{macro}
+% \begin{environment}{cv}
+% The cv environment:
+%    \begin{macrocode}
+\newenvironment{cv}{\makecvtitle}{\app@clearpage}
+%    \end{macrocode}
+% \end{environment}
+% \begin{macro}{\cvtitlepage}
+% The |\cvtitlepage| command is used by |\makecvtitle| to typeset a title page for your cv if you've configured \textsf{sbapplication} to make one.
+%    \begin{macrocode}
+  \newcommand{\cvtitlepage}{
+
+
+
+}
+%    \end{macrocode}
+% \end{macro}
+% \begin{macro}{\cvheading}
+% Alternatively, |\makecvtitle| uses |\cvheading| to typeset a header for your cv.
+%    \begin{macrocode}
+\newcommand{\cvheading}{
+}
+%    \end{macrocode}
+% \end{macro}
+% \begin{macro}{\makecvtitle}
+% The |\makecvtitle| command typesets -- depending on what you've configured -- a title page or a header for your cv. Furthermore, it executes |\AtBeginCV| just before finishing the opening of the |cv| environment.
+%    \begin{macrocode}
+\newcommand{\makecvtitle}{\ifthenelse{\boolean{app@cvtitlepage}}{\app@clearpage\cvtitlepage\app@pdf@includebookmark{0}{\app@cvname}{cv}\app@clearpage\AtBeginCV}{\app@clearpage\AtBeginCV\cvheading}}
+%    \end{macrocode}
+%  \end{macro}
+% Define some lengths to be used in typesetting your cv:
+%    \begin{macrocode}
+\renewcommand{\arraystretch}{1.5}
+\newlength\intercolspace
+\setlength\intercolspace{0.05\textwidth}
+\newlength\firstcol
+\setlength\firstcol{0.275\textwidth}
+\setlength\tabcolsep{0cm}
+%    \end{macrocode}
+% \begin{macro}{\app@cvsecheading}
+% This macro typesets the heading of a section in your cv.
+%    \begin{macrocode}
+   \newcommand{\app@cvsecheading}[1]{#1}
+%    \end{macrocode}
+% \end{macro}
+% \begin{environment}{cvsec}
+% The |cvsec| environment is used to typset one section of your cv:
+%    \begin{macrocode}
+\newenvironment{cvsec}[1]{\app@cvsecheading{#1}\begin{longtable}{l@{\hspace{\intercolspace}}l}}{\end{longtable}}
+%    \end{macrocode}
+% \end{environment}
+% \begin{macro}{\cvitem}
+%    \begin{macrocode}
+  \newcommand{\cvitem}[2]{\parbox[t]{4cm}{\strut#1\strut} & \parbox[t]{12cm}{\strut#2\strut}\\[0.1em]}
+%    \end{macrocode} 
+%  \end{macro}
+% \subsection{The cover letter}
+% \begin{macro}{\cvletterhead}
+% Redefine this command for a custom letterhead for your cover letter:
+%    \begin{macrocode}
+\newcommand{\cvletterhead}{
+\app@nameWithTitle
+
+}
+%    \end{macrocode}
+%  \end{macro}
+% \begin{macro}{\opening}
+% According to DIN 5008, there is one empty line after the opening of a letter and its contents:
+%    \begin{macrocode}
+\newcommand{\opening}[1]{#1\hfill\vspace{\baselineskip}\newline} 
+%    \end{macrocode}
+%  \end{macro}
+% \begin{macro}{\closing}
+% According to DIN 5008, there is one empty line between content and the closing of a letter.
+%    \begin{macrocode}
+\newcommand{\closing}[1]{\hfill\vspace{\baselineskip}\newline#1} 
+%    \end{macrocode}
+%  \end{macro}
+% \begin{macro}{\subject}
+% According to DIN5008, there are two empty lines between subject of a letter and its body.
+%    \begin{macrocode}
+\newcommand{\subject}[1]{\noindent{\bf#1}\hfill\vspace{2\baselineskip}\newline\noindent} 
+%    \end{macrocode}
+%  \end{macro}
+% \begin{macro}{\shortadress}
+% This typesets the short backadress in the adress window of the cover letter based on the given meta data.
+%    \begin{macrocode}
+\newcommand{\shortadress}{\app@initialedName,{ }\@street,{ }\@countrycode\@zip{ }\@place}
+%    \end{macrocode}
+%  \end{macro}
+
+% \begin{macro}{\adresswindow}
+% This code typesets the adress window in the cover letter:
+%    \begin{macrocode}
+\newcommand{\adresswindow}[1]{{\hspace{0.5cm}\footnotesize\shortadress}\vspace{0.25\baselineskip}
+\hrule\hspace{0.5cm}
+\begin{minipage}[t][40mm][c]{7.9cm}
+                 #1
+\end{minipage}
+\hrule}
+%    \end{macrocode}
+%  \end{macro}
+% \begin{macro}{\signature}
+% Command to typset the signature on your cover letter:
+%    \begin{macrocode}
+\newcommand{\signature}[1]{
+\hfill\vspace{\baselineskip}\newline#1
+}
+%    \end{macrocode}
+%  \end{macro}
+% \begin{macro}{\AtBeginCoverLetter}
+% This command gets executed right after the cover letter environment is opened. Redefine this according to your needs.
+%    \begin{macrocode}
+\newcommand{\AtBeginCoverLetter}{\relax}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{environment}{coverletter}
+% This is the actual environment to typeset the cover letter:
+%    \begin{macrocode}
+\newenvironment{coverletter}[1]{\app@clearpage\app@pdf@includebookmark{0}{\app@coverlettername}{coverletter}\AtBeginCoverLetter\noindent
+\begin{minipage}[t][3cm][t]{\textwidth}
+ \cvletterhead
+\end{minipage}
+\hspace{-0.5cm}
+\begin{minipage}{8.5cm}
+\adresswindow{#1}
+\end{minipage}
+\vspace{\baselineskip}
+\begin{flushright}
+\@appdateplace
+\end{flushright}\hfill
+
+
+
+}{\app@clearpage}
+%    \end{macrocode}
+% \end{environment}
+% \subsection{Diplomas}
+% \begin{macro}{\DiplListNoPageNums}
+% \begin{macro}{\DiplListPageNums}
+% \begin{macro}{\DiplListNoToc}
+% \begin{macro}{\DiplListToc}
+% Some commands to configure the way diplomas are included in the document.
+%    \begin{macrocode}
+\newboolean{dipllist@nopagenums}
+\setboolean{dipllist@nopagenums}{false}
+\newboolean{dipllist@notoc}
+\setboolean{dipllist@notoc}{false}
+
+\newcommand{\DiplListNoPageNums}{\setboolean{dipllist@nopagenums}{true}}
+\newcommand{\DiplListPageNums}{\setboolean{dipllist@nopagenums}{false}}
+\newcommand{\DiplListNoToc}{\setboolean{diplist@notoc}{true}}
+\newcommand{\DiplListToc}{\setboolean{dipllist@notoc}{false}}
+%    \end{macrocode}
+% \end{macro}
+% \end{macro}
+% \end{macro}
+% \end{macro}
+% \begin{macro}{\AtBeginDiplomas}
+% This command is called when the |diplomas| environment is opened. Redefine it to your needs.
+%    \begin{macrocode}
+\newcommand{\AtBeginDiplomas}{\relax}
+%    \end{macrocode}
+%  \end{macro}
+% \begin{environment}{diplomas}
+% The |diplomas| environment opens a new temporary file in which we store all information given about
+% the diplomas. This is read in a second run and used to set the list of diplomas on the title page.
+%    \begin{macrocode}
+\newwrite\outlodfile
+\newread\inlodfile
+\newenvironment{diplomas}{
+\ifthenelse{\boolean{app@diplpage}}{\app@clearpage\makediplomatitle\app@pdf@includebookmark{0}{\app@diplomalistname}{dipls}\app@clearpage\AtBeginDiplomas}{\relax}
+\immediate\openout\outlodfile=\jobname.lod
+}{ 
+\immediate\closeout\outlodfile
+}
+%    \end{macrocode}
+% \end{environment}
+% \begin{macro}{\dipl@TocSection}
+% This macro determines, on what level the diploma is included in the pdf's table of contents.
+%    \begin{macrocode}
+\newcommand{\dipl@TocSection}{section}
+%    \end{macrocode}
+% \end{macro}
+% \begin{macro}{\diploma@notoc}
+% This command is used to include a diploma without generating an entry in the pdf's table of contents.
+%    \begin{macrocode}
+\newcommand{\diploma@notoc}[3]{
+  \clearpage
+\phantomsection
+\label{#1}
+\includepdf[pages={#3}]{#2}
+}
+%    \end{macrocode}
+% \end{macro}
+% \begin{macro}{\diploma}
+% This command is used to include a diploma. An entry is written to an aux file for later use.
+%    \begin{macrocode}
+\newcommand{\diploma}[5]{
+\ifthenelse{\boolean{dipllist@notoc}}{
+  \diploma@notoc{#2}{#3}{#4}
+}{
+  \ifthenelse{\boolean{app@notoc}}{
+   \diploma@notoc{#2}{#3}{#4}
+  }{
+    \includepdf[pages={#4},addtotoc={#5,\dipl@TocSection,1,{#1},#2}]{#3} 
+  }
+}
+\immediate\write\outlodfile{#1;#2}
+}
+%    \end{macrocode}
+% \end{macro}
+% \subsubsection{List of diplomas and diploma title page}
+% Some helper commands to typeset a list of diplomas:
+%    \begin{macrocode}
+\def\chopline#1;#2 \\{
+  \def\loditemcaption{#1}
+  \def\loditemlabel{#2}
+}
+
+\newcommand{\lod@baseitem}[2]{
+\ifthenelse{\boolean{dipllist@nopagenums}}{#1}{
+#1\dotfill\pageref*{#2}}}
+
+\newcommand{\lod@item}[2]{\hyperref[#2]{\lod@baseitem{#1}{#2}}}
+%    \end{macrocode}
+% Additionally, set some lengths that govern the layout of the diploma list:
+%    \begin{macrocode}
+\newlength{\lod@rmargin}
+\setlength{\lod@rmargin}{0cm}
+
+\newlength{\lod@lmargin}
+\setlength{\lod@lmargin}{0cm}
+
+\newlength{\lod@topmargin}
+\setlength{\lod@topmargin}{\itemsep}
+
+\newlength{\lod@itemsep}
+\setlength{\lod@itemsep}{\itemsep}
+
+\newlength{\lod@bottommargin}
+\setlength{\lod@bottommargin}{0cm}
+%    \end{macrocode}
+% \begin{macro}{\lod@heading}
+% \begin{macro}{\lod@footer}
+% Macros to typeset that should be the header or footer of a list of diplomas:
+%    \begin{macrocode}
+\newcommand{\lod@heading}{\relax}
+\newcommand{\lod@footer}{\relax}
+%    \end{macrocode}
+% \end{macro}
+% \end{macro}
+% \begin{macro}{\listofdiplomas}
+% This sets the list of diplomas given from a *.lod file written by the |\diploma|s in the |diplomas| environment.
+%    \begin{macrocode}
+\def\lodmargin#1#2{\list{}{\rightmargin#2\leftmargin#1}\item[]}
+\let\endlodmargin=\endlist 
+
+\newcommand{\listofdiplomas}{
+\IfFileExists{\jobname.lod}{
+\lod@heading
+\openin\inlodfile=\jobname.lod
+\begin{lodmargin}{\lod@lmargin}{\lod@rmargin}
+\vspace{\lod@topmargin}
+\loop
+\read\inlodfile to \lodline
+\unless\ifeof\inlodfile
+
+\expandafter\chopline\lodline\\
+{\lod@item{\loditemcaption}{\loditemlabel}}\vspace{\lod@itemsep}
+\repeat
+\end{lodmargin}
+\vspace{\lod@bottommargin}
+\closein\inlodfile
+
+\lod@footer
+}{}}
+%    \end{macrocode}
+% \end{macro}
+% \begin{macro}{\makediplomatitle}
+% This command typesets a title page with a list of all the included diplomas.
+%    \begin{macrocode}
+\newcommand{\makediplomatitle}{
+
+
+\listofdiplomas
+
+}
+%    \end{macrocode}
+% \end{macro}
+% \subsection{Commmands to include files in \textsf{sbapplication}}
+% \textsf{sbapplication} knows of a default profile and other profiles. Included files are first searched in the current profile, and if that does not exist in the base profile, if that does not exist an error is thrown.
+% \begin{macro}{\SetProfile}
+% \begin{macro}{\@getprofile}
+% \begin{macro}{\@currentprofile}
+% Commands to keep track in what profile we currently are:
+%    \begin{macrocode}
+\def\@currentprofile{\relax}
+\newcommand{\SetProfile}[1]{\gdef\@currentprofile{#1}} 
+\newcommand\@getprofile{\if\@currentprofile\relax\else\@currentprofile\fi} 
+%    \end{macrocode}
+% \end{macro}
+% \end{macro}
+% \end{macro}
+
+% \begin{macro}{\@profileBasePath}
+% \begin{macro}{\SetProfileBasePath}
+% \begin{macro}{\@defaultProfile}
+% \begin{macro}{\SetDefaultProfile}
+% Functions to set and retrieve the information about the parent directory of all profiles and the default profile.
+%    \begin{macrocode}
+\def\@profileBasePath{./}
+\newcommand{\SetProfileBasePath}[1]{\gdef\@profileBasePath{#1}}
+
+\def\@defaultProfile{default}
+\newcommand{\SetDefaultProfile}[1]{\gdef\@defaultProfile{#1}}
+%    \end{macrocode}
+% \end{macro}
+% \end{macro}
+% \end{macro}
+% \end{macro}
+% \begin{macro}{\IncludeFromProfile}
+% This is the function to include files from the current profile. 
+%    \begin{macrocode}
+\newcommand{\IncludeFromProfile}[1]{
+\ifx\@currentprofile\relax
+\IfFileExists{\@profileBasePath/\@defaultProfile/#1} %file name check
+{\input{\@profileBasePath/\@defaultProfile/#1}} %input if file exists
+{
+\ClassError{sbapplication}{File not found.}{Check your profile base path and/or default profile.}
+}
+\else
+%in this branch profile is set
+\IfFileExists{\@profileBasePath/\@currentprofile/#1} %file name check
+{\input{\@profileBasePath/\@currentprofile/#1}} %input if file exists
+{ %if file does not exist in desired profile, fall back to default
+\IfFileExists{\@profileBasePath/\@defaultProfile/#1} %file name check
+{\input{\@profileBasePath/\@defaultProfile/#1}} %input if file exists in default profile
+{ %if file not found, error
+\ClassError{sbapplication}{File not found.}{Check your profile base path and/or default profile.}
+}
+}
+\fi
+}
+%    \end{macrocode}
+% \end{macro}
+% \subsection{Helper commands to generate names}
+% This are a set of helper functions that generate your name out of the given meta data in various formats.
+% \begin{macro}{\app@initialedName}
+% Just returns intial plus lastname, i.e. J. Doe.
+%    \begin{macrocode}
+\newcommand{\app@initialedName}{\@initials{ }\@lastname}
+%    \end{macrocode}
+% \end{macro}
+% \begin{macro}{\app@nameWithTitle}
+% Returns name with your title, if that is not defined with your degree (and if that does not exist, just your name). In other words, if John Doe has a PhD, this prints Dr. John Doe, if he just has a MSc it prints MSc John Doe and in all other cases just John Doe.
+%    \begin{macrocode}
+\newcommand{\app@nameWithTitle}{\ifthenelse{\equal{\@academictitle}{\relax}}{
+\ifthenelse{\equal{\@degreeshort}{\relax}}{\relax}{\@degreeshort{ }}}{
+\@academictitle{ }}\@firstname{ }\@lastname}
+%    \end{macrocode}
+%  \end{macro}
+% \begin{macro}{\app@nameWithAll}
+% Returns your name with title and degree, i.e. Dr. MSc. John Doe.
+%    \begin{macrocode}
+\newcommand{\app@nameWithAll}{
+\ifthenelse{\equal{\@academictitle}{\relax}}{\relax}{\@academictitle{ }}
+\ifthenelse{\equal{\@degreeshort}{\relax}}{\relax}{\@degreeshort{ }}
+\@firstname{ }\@lastname
+}
+%    \end{macrocode}
+%  \end{macro}
+% \subsection{Optional cover page}
+% \begin{macro}{\coverpage}
+%    \begin{macrocode}
+\newcommand{\coverpage}{
+\app@clearpage
+\begin{center}
+\vfill
+{\Huge\bfseries\app@apptitle}\newline
+\vfill
+{\large\app@nameWithTitle}
+\ifthenelse{\equal{\@academictitle}{\relax}}{\relax}{
+\ifthenelse{\equal{\@degree}{\relax}}{\relax}{\newline\noindent\@degree}
+}
+\vfill
+\end{center}
+}
+%    \end{macrocode}
+% \end{macro}
+% \Finale
+\endinput
