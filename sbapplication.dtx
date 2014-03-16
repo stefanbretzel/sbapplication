@@ -270,6 +270,44 @@ cover letter, cv and diplomas based on article)---}
 \newcommand{\app@clearpage}{\ifthenelse{\boolean{app@twoside}}{\cleardoublepage}{\clearpage}}
 %    \end{macrocode}
 % \end{macro}
+% \subsubsection{Helper commands for formatting}
+% \begin{macro}{\SBHeadingStyle}
+% Command used to format the caption of the cv title page, title page, diploma title page.
+%    \begin{macrocode}
+ \newcommand{\SBHeadingStyle}{\bfseries\Huge}
+%    \end{macrocode}
+% \end{macro}
+% \begin{macro}{\SBCVNameStyle}
+% This macro is used to format your name on the cv cover page.
+%    \begin{macrocode}
+ \newcommand{\SBCVNameStyle}{\bf\Large}     
+%    \end{macrocode}
+%  \end{macro}
+% \begin{macro}{\SBCVSecHeadingStyle}
+% Command used to format the section headings in your cv.
+%    \begin{macrocode}
+  \newcommand{\SBCVSecHeadingStyle}{\bf\Large}    
+%    \end{macrocode}
+% \end{macro}
+% \begin{macro}{\SBCVLongItemHeadingStyle}
+%    \begin{macrocode}
+\newcommand{\SBCVLongItemHeadingStyle}{\bf}
+%    \end{macrocode}
+% \end{macro}
+% \begin{macro}{\SBAdress}
+% \begin{macro}{\SBEmail}
+% \begin{macro}{\SBTelefon}
+% \begin{macro}{\SBWWW}
+%    \begin{macrocode}
+\newcommand{\SBAdress}{\relax}
+\newcommand{\SBEmail}{Email:}
+\newcommand{\SBTelefon}{Tel:}
+\newcommand{\SBWWW}{WWW:}
+%    \end{macrocode}
+% \end{macro}
+% \end{macro}
+% \end{macro}
+% \end{macro}
 % \subsection{Meta data}
 % In this section, the various commands for setting and using meta data are defined.
 %
@@ -345,6 +383,10 @@ cover letter, cv and diplomas based on article)---}
 \def\@thewww{\relax}
 \newcommand{\www}[1]{\gdef\@thewww{#1}}
 \newcommand\@www{\if\@thewww\relax\relax\else\@thewww\fi} 
+
+\def\@thephoto{\relax}
+\newcommand{\photo}[1]{\gdef\@thephoto{#1}} %if signature is called, the signature is set
+\newcommand\@photo{\if\@thephoto\relax\relax\else\@thephoto\fi} 
 %    \end{macrocode}
 % \subsection{The CV}
 % \begin{macro}{\cvdate}
@@ -388,9 +430,22 @@ cover letter, cv and diplomas based on article)---}
 % The |\cvtitlepage| command is used by |\makecvtitle| to typeset a title page for your cv if you've configured \textsf{sbapplication} to make one.
 %    \begin{macrocode}
   \newcommand{\cvtitlepage}{
-
-
-
+  \thispagestyle{empty}
+  \begin{center}
+{\SBHeadingStyle\app@cvname}
+\vfill
+\@thephoto
+\vfill
+\begin{tabular}{l@{\hspace{5mm}}l}
+\multicolumn{2}{l}{\SBCVNameStyle\app@nameWithTitle}\\
+\SBAdress & \@thestreet\\
+&\@thezip\mbox{ }\@theplace\\
+\if\@thecountry\relax\else&\@thecountry\\\fi
+\SBEmail & \href{mailto:\@theemail}{\texttt{\@theemail}}\\
+\if\@thewww\relax\else\SBWWW&\href{http://\@thewww}{\texttt{\@thewww}}\\\fi
+\SBTelefon & \@thephone\\
+\end{tabular}
+\end{center}
 }
 %    \end{macrocode}
 % \end{macro}
@@ -411,21 +466,23 @@ cover letter, cv and diplomas based on article)---}
 %    \begin{macrocode}
 \renewcommand{\arraystretch}{1.5}
 \newlength\intercolspace
-\setlength\intercolspace{0.05\textwidth}
+\setlength\intercolspace{0.2cm}
 \newlength\firstcol
 \setlength\firstcol{0.275\textwidth}
 \setlength\tabcolsep{0cm}
+\newlength\cvheadingsep
+\setlength\cvheadingsep{-0.75\baselineskip}
 %    \end{macrocode}
 % \begin{macro}{\app@cvsecheading}
 % This macro typesets the heading of a section in your cv.
 %    \begin{macrocode}
-   \newcommand{\app@cvsecheading}[1]{#1}
+   \newcommand{\app@cvsecheading}[1]{{\SBCVSecHeadingStyle#1}}
 %    \end{macrocode}
 % \end{macro}
 % \begin{environment}{cvsec}
 % The |cvsec| environment is used to typset one section of your cv:
 %    \begin{macrocode}
-\newenvironment{cvsec}[1]{\app@cvsecheading{#1}\begin{longtable}{l@{\hspace{\intercolspace}}l}}{\end{longtable}}
+\newenvironment{cvsec}[1]{\app@cvsecheading{#1}\vspace{\cvheadingsep}\begin{longtable}{l@{\hspace{\intercolspace}}l}}{\end{longtable}}
 %    \end{macrocode}
 % \end{environment}
 % \begin{macro}{\cvitem}
@@ -433,13 +490,24 @@ cover letter, cv and diplomas based on article)---}
   \newcommand{\cvitem}[2]{\parbox[t]{4cm}{\strut#1\strut} & \parbox[t]{12cm}{\strut#2\strut}\\[0.1em]}
 %    \end{macrocode} 
 %  \end{macro}
+%  \begin{macro}{\cvlongitem}
+%    \begin{macrocode}
+\newcommand{\cvlongitem}[3]{\cvitem{#1}{{\SBCVLongItemHeadingStyle#2}\newline#3}}
+%    \end{macrocode}  
+%  \end{macro}
 % \subsection{The cover letter}
 % \begin{macro}{\cvletterhead}
 % Redefine this command for a custom letterhead for your cover letter:
 %    \begin{macrocode}
 \newcommand{\cvletterhead}{
-\app@nameWithTitle
-
+\app@nameWithTitle\begin{flushright}
+\begin{tabular}{l@{\hspace{5mm}}l}
+\SBAdress &       \@street\\
+&       \@zip{ }\@place\\
+\SBTelefon&      \@phone\\
+\SBEmail&\href{mailto\@theemail}{\texttt{\@theemail}}
+\end{tabular}
+\end{flushright}
 }
 %    \end{macrocode}
 %  \end{macro}
@@ -497,7 +565,7 @@ cover letter, cv and diplomas based on article)---}
 % \begin{environment}{coverletter}
 % This is the actual environment to typeset the cover letter:
 %    \begin{macrocode}
-\newenvironment{coverletter}[1]{\app@clearpage\app@pdf@includebookmark{0}{\app@coverlettername}{coverletter}\AtBeginCoverLetter\noindent
+\newenvironment{coverletter}[1]{\app@clearpage\thispagestyle{empty}\app@pdf@includebookmark{0}{\app@coverlettername}{coverletter}\AtBeginCoverLetter\noindent
 \begin{minipage}[t][3cm][t]{\textwidth}
  \cvletterhead
 \end{minipage}
@@ -661,10 +729,14 @@ cover letter, cv and diplomas based on article)---}
 % This command typesets a title page with a list of all the included diplomas.
 %    \begin{macrocode}
 \newcommand{\makediplomatitle}{
-
-
-\listofdiplomas
-
+\thispagestyle{empty}
+ \begin{center}
+ \vfill
+ {\SBHeadingStyle\app@diplomalistname}
+ \vfill
+ \listofdiplomas
+ \vfill
+ \end{center}
 }
 %    \end{macrocode}
 % \end{macro}
@@ -755,15 +827,21 @@ cover letter, cv and diplomas based on article)---}
 %    \begin{macrocode}
 \newcommand{\coverpage}{
 \app@clearpage
+\thispagestyle{empty}
+\vfill\begin{center}
+{\SBHeadingStyle\app@apptitle}%\newline
+\end{center}
+\vfill
 \begin{center}
-\vfill
-{\Huge\bfseries\app@apptitle}\newline
-\vfill
-{\large\app@nameWithTitle}
-\ifthenelse{\equal{\@academictitle}{\relax}}{\relax}{
-\ifthenelse{\equal{\@degree}{\relax}}{\relax}{\newline\noindent\@degree}
-}
-\vfill
+\begin{tabular}{l@{\hspace{5mm}}l}
+\multicolumn{2}{l}{\SBCVNameStyle\app@nameWithTitle}\\
+\SBAdress & \@thestreet\\
+&\@thezip\mbox{ }\@theplace\\
+\if\@thecountry\relax\else&\@thecountry\\\fi
+\SBEmail & \href{mailto:\@theemail}{\texttt{\@theemail}}\\
+\if\@thewww\relax\else\SBWWW&\href{http://\@thewww}{\texttt{\@thewww}}\\\fi
+\SBTelefon & \@thephone\\
+\end{tabular}
 \end{center}
 }
 %    \end{macrocode}
