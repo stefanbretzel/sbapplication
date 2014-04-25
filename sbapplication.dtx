@@ -127,15 +127,49 @@
 % \subsection{The coverletter environment}
 %
 % \subsection{The cv environment}
+% \DescribeEnv{cv}The |cv| environment opens, as the name suggests, an environment for typesetting your cv. If you specified\DescribeMacro{cvpage}\DescribeMacro{cvhead} the |cvpage| class option (this is the default), your cv will start with a separate title page. By setting the |cvhead| class option, your cv will not start with a separate title page. In any case, you can use the \DescribeMacro{\photo}{<Photo>} command to specify the photo used on the cv titlepage or on in the head of your cv.
 %
+% To typeset the individual sections of your cv, you can use the\DescribeEnv{cvsec} |cvsec| environment, which takes the caption of the section as argument. 
 % \subsection{The diplomas environment}
-% \DescribeEnv{diplomas} The |diplomas| environment can be used to include your diplomas in a nice way in your application. Opening this environment automatically creates an extra page within your job application containing a list of all included diplomas.
+% \DescribeEnv{diplomas} The |diplomas| environment can be used to include your diplomas in a nice way in your application. Opening this environment automatically creates an extra page within your job application containing a list of all included diplomas if the \DescribeMacro{diplpage}\DescribeMacro{nodiplpage} the |diplpage| class option is set (this is the default). If you don't want to have this extra page, use the |nodiplpage| class option.
 %
-%\DescribeMacro{\diploma} In order to include the actual diploma, use the |\diploma|\{description\}\{label\}\{filename\}\{pages\}\{start page\} command.
+%\DescribeMacro{\diploma} In order to include the actual diploma, use the |\diploma|\{description pdf toc\}\-\{description\}\-\{label\}\-\{filename\}\-\{pages\}\-\{start page\} command. Here, ``description pdf toc'' is the description of the diploma as displayed in the toc of the pdf, whereas ``description'' is the one that will be displayed in your document. 
+
 % \section{Advanced usage}
 % \subsection{Private parts of your job application}
+% \textsf{sbapplication} provides a mechanism to hide certain parts of your document, if the document is compiled in a ``public'' mode. I came up with this feature, since on top of the job application I wanted to have some relevant information for my personal use (like information about the company etc.) contained in the same document.
+%
+% \DescribeMacro{\beginPrivate}\DescribeMacro{\endPrivate} You can declare a part of your \LaTeX document to be private by starting the relevant part with |\beginPrivate| and end the section with |\endPrivate|. \DescribeMacro{\ShowPrivate}With the |\ShowPrivate| command you can specify that all private sections declared in such a way are shown in the output document.
 % \subsection{Custom include mechanism}
 % \section{Changing how things look}
+% \subsection{Class options}
+% There are various class options, that influence how your application will be typeset.
+% \begin{itemize}
+%   \item \DescribeEnv{pdfinfo}|pdfinfo|: If this option is given, the meta information of the pdf will be set. The pdf's author will be ``Firstname Lastname'', the title  ``Application Firstname Lastname''. Here, ``Firstname'' and ``Lastname'' are the values you have set with the respective commands.
+%   \item \DescribeEnv{oneside}\DescribeEnv{twoside} The |oneside|, |twoside| macros control, whether your application will be printed in one or two sided. This option is passed to the underlying article class.
+%   \item \DescribeEnv{draft}\DescribeEnv{10pt}\DescribeEnv{11pt}\DescribeEnv{12pt} |draft|, |10pt|, |11pt|, |12pt| are options that are passed to the parent \textsf{article} class.
+%   \item \DescribeEnv{german} The |german| option will load a german locale.
+%   \item \DescribeEnv{cvpage}\DescribeEnv{cvhead} If the option |cvpage| is given, the cv will start with a separate title page. If the option |cvhead| is given, the cv will start with a head containing your name, adress and (possibly) your photo. Default is |cvpage|.
+% \item \DescribeEnv{diplpage}\DescribeEnv{nodiplpage} Given |diplpage|, the diploma section of the application will start with a separate page listing all diplomas, whereas |nodiplpage| will prevent the output of such a page. Default is |diplpage|.
+% \item \DescribeEnv{totoc}\DescribeEnv{notoc} If |totoc| is passed to the class, the cover letter, cv, diploma page and all diplomas will create entries in the pdf's table of contents. The reverse can  be achieved with |notoc|, which is also the default.
+% \end{itemize}
+% \subsection{Names used within your application}
+% \DescribeMacro{\app@apptitle}\DescribeMacro{\app@itstoday}\DescribeMacro{\app@cvname}\DescribeMacro{\app@coverlettername}\DescribeMacro{\app@diplomalistname} You need to redefine the |\app@cvname|, |\app@coverlettername|, |\app@diplomalistname| commands to change what \textsf{sbapplication} uses as captions for the respective parts of your application. See table \ref{tab:names} for the default values of these commands.
+% \begin{table}
+% \begin{tabular}{lll}
+% Command& English & German\\
+% \hline
+% |\app@cvname| & CV & Lebenslauf\\
+% |\app@coverlettername| & Cover Letter & Anschreiben \\
+% |\app@diplomalistname| & Diplomas & Zeugnisse \\
+% |\app@apptitle| & Application & Bewerbungsmappe \\
+% |\app@itstoday| & now & Heute
+% \end{tabular}
+% \caption{List of commands that define names used in \textsf{sbapplication} and their default values and the values when the class option german is used.}
+% \label{tab:names}
+% \end{table}
+% \DescribeMacro{\@appdateplace}If you want to change the how the date is typeset on the coverletter and on the cv, you must redefine the |\@appdateplace| macro.
+
 % \DescribeMacro{\YOURMACRO}
 % Put description of |\YOURMACRO| here.
 %
@@ -198,6 +232,12 @@ cover letter, cv and diplomas based on article)---}
 \DeclareOption{notoc}{\setboolean{app@notoc}{true}}
 \DeclareOption{totoc}{\AppToToc}
 %    \end{macrocode}
+% With the |pdfinfo| option, you can have set the pdf's meta information (author, title, subject) to values based on the given meta-data.
+%    \begin{macrocode}
+\newboolean{app@pdfinfo}
+\setboolean{app@pdfinfo}{false}
+\DeclareOption{pdfinfo}{\setboolean{app@pdfinfo}{true}}   
+%    \end{macrocode}
 % Finally, process all options, require some more packages and load the \textsf{article} class. So far, \textsf{sbapplication} supports only a4 paper, thus we load the \textsf{article} class with the |a4paper| option.
 %    \begin{macrocode}
 \ProcessOptions\relax
@@ -218,6 +258,20 @@ cover letter, cv and diplomas based on article)---}
 \geometry{left=2.5cm, right=2cm,top=2cm,bottom=2cm,footskip=0.5cm} 
 \setlength{\parindent}{0cm}
 \setlength{\parskip}{\baselineskip}
+%    \end{macrocode}
+% \subsubsection{Set pdf information}
+% Based on the meta info given, the pdf's information is set provided the setpdfinfo option was given.
+%    \begin{macrocode}
+\AtBeginDocument{
+\ifthenelse{\boolean{app@pdfinfo}}{
+\hypersetup{
+pdfborder={0 0 0},
+pdftitle={\app@apptitle{ }\@thefirstname{ }\@thelastname},
+pdfauthor={\@thefirstname{ }\@thelastname},
+pdfsubject={\app@apptitle}
+}
+}{\relax}
+}
 %    \end{macrocode}
 % \subsection{Keeping some parts of the document private}
 % \begin{environment}{private}
@@ -644,17 +698,17 @@ cover letter, cv and diplomas based on article)---}
 % \begin{macro}{\diploma}
 % This command is used to include a diploma. An entry is written to an aux file for later use.
 %    \begin{macrocode}
-\newcommand{\diploma}[5]{
+\newcommand{\diploma}[6]{
 \ifthenelse{\boolean{dipllist@notoc}}{
-  \diploma@notoc{#2}{#3}{#4}
+  \diploma@notoc{#3}{#4}{#5}
 }{
   \ifthenelse{\boolean{app@notoc}}{
-   \diploma@notoc{#2}{#3}{#4}
+   \diploma@notoc{#3}{#4}{#5}
   }{
-    \includepdf[pages={#4},addtotoc={#5,\dipl@TocSection,1,{#1},#2}]{#3} 
+    \includepdf[pages={#5},addtotoc={#6,\dipl@TocSection,1,{#1},#3}]{#4} 
   }
 }
-\immediate\write\outlodfile{#1;#2}
+\immediate\write\outlodfile{\detokenize{#2};#3}
 }
 %    \end{macrocode}
 % \end{macro}
