@@ -475,9 +475,14 @@ pdfsubject={\app@apptitle}
 %    \end{macrocode}
 %  \end{macro}
 % \begin{environment}{cv}
-% The cv environment:
+% The cv environment opens a new temporary file in which we store information about the sections in the cv.
 %    \begin{macrocode}
-\newenvironment{cv}{\makecvtitle}{\app@clearpage}
+\newwrite\outcvseclistfile
+\newread\incvseclistfile
+\newenvironment{cv}{\makecvtitle
+\immediate\openout\outcvseclistfile=\jobname.cvl
+}{\app@clearpage
+\immediate\closeout\outcvseclistfile}
 %    \end{macrocode}
 % \end{environment}
 % \begin{macro}{\cvtitlepage}
@@ -533,10 +538,17 @@ pdfsubject={\app@apptitle}
    \newcommand{\app@cvsecheading}[1]{{\SBCVSecHeadingStyle#1}}
 %    \end{macrocode}
 % \end{macro}
+% \begin{macro}{\app@cvsecbookmark}
+% This macro is used to set bookmarks for each cv section in the pdf. Redefine if you don't want to have this behaviour.
+%    \begin{macrocode}
+\newcommand{\app@cvsecbookmark}[2]{\hypertarget{#2}{\relax}\label{#2}\app@pdf@includebookmark{1}{#1}{#2}} 
+%    \end{macrocode}
+%  \end{macro}
 % \begin{environment}{cvsec}
 % The |cvsec| environment is used to typset one section of your cv:
 %    \begin{macrocode}
-\newenvironment{cvsec}[1]{\app@cvsecheading{#1}\vspace{\cvheadingsep}\begin{longtable}{l@{\hspace{\intercolspace}}l}}{\end{longtable}}
+\newenvironment{cvsec}[2]{\immediate\write\outcvseclistfile{\detokenize{#1};#2}
+\app@cvsecheading{#1}\app@cvsecbookmark{#1}{#2}\vspace{\cvheadingsep}\begin{longtable}{l@{\hspace{\intercolspace}}l}}{\end{longtable}}
 %    \end{macrocode}
 % \end{environment}
 % \begin{macro}{\cvitem}
@@ -549,6 +561,7 @@ pdfsubject={\app@apptitle}
 \newcommand{\cvlongitem}[3]{\cvitem{#1}{{\SBCVLongItemHeadingStyle#2}\newline#3}}
 %    \end{macrocode}  
 %  \end{macro}
+% \subsubsection{List ov cv sections}
 % \subsection{The cover letter}
 % \begin{macro}{\cvletterhead}
 % Redefine this command for a custom letterhead for your cover letter:
